@@ -1,0 +1,186 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-noto-sans-tc), system-ui, sans-serif;
+  --font-serif: var(--font-noto-serif-tc), Georgia, serif;
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar: var(--sidebar);
+  --color-chart-5: var(--chart-5);
+  --color-chart-4: var(--chart-4);
+  --color-chart-3: var(--chart-3);
+  --color-chart-2: var(--chart-2);
+  --color-chart-1: var(--chart-1);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent: var(--accent);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-muted: var(--muted);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-secondary: var(--secondary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary: var(--primary);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-popover: var(--popover);
+  --color-card-foreground: var(--card-foreground);
+  --color-card: var(--card);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --radius-3xl: calc(var(--radius) + 12px);
+  --radius-4xl: calc(var(--radius) + 16px);
+}
+
+html, body, * {
+  font-family: var(--font-noto-serif-tc), Georgia, serif;
+}
+
+/* Smooth scrolling */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Focus styles for accessibility */
+*:focus-visible {
+  outline: 2px solid #B54334;
+  outline-offset: 2px;
+}
+
+/* Selection color - 閩南紅磚風格 */
+::selection {
+  background-color: #E8D4C4;
+  color: #3D2314;
+}
+
+:root {
+  --radius: 0.625rem;
+
+  /* 閩南紅磚風格色彩系統 */
+  /* 背景色 - 暖米白 */
+  --background: #FDF8F3;
+  /* 前景色 - 深褐 */
+  --foreground: #3D2314;
+
+  /* 卡片 */
+  --card: #FFFFFF;
+  --card-foreground: #3D2314;
+
+  /* 彈出層 */
+  --popover: #FFFFFF;
+  --popover-foreground: #3D2314;
+
+  /* 主要色 - 磚紅 */
+  --primary: #B54334;
+  --primary-foreground: #FDF8F3;
+
+  /* 次要色 - 淺陶土 */
+  --secondary: #F5EBE0;
+  --secondary-foreground: #3D2314;
+
+  /* 靜音色 */
+  --muted: #F5EBE0;
+  --muted-foreground: #6B5344;
+
+  /* 強調色 */
+  --accent: #F5EBE0;
+  --accent-foreground: #3D2314;
+
+  /* 警示色 - 朱紅 */
+  --destructive: #C94A3A;
+
+  /* 邊框 - 淺褐 */
+  --border: #D9C4B0;
+  --input: #D9C4B0;
+
+  /* 焦點環 - 磚紅 */
+  --ring: #B54334;
+
+  /* 圖表色 - 閩南風格配色 */
+  --chart-1: #B54334; /* 磚紅 */
+  --chart-2: #5B7A5B; /* 青苔綠 */
+  --chart-3: #C9A227; /* 琉璃黃 */
+  --chart-4: #6B5344; /* 褐灰 */
+  --chart-5: #8B3328; /* 深磚紅 */
+
+  /* 側邊欄 */
+  --sidebar: #FDF8F3;
+  --sidebar-foreground: #3D2314;
+  --sidebar-primary: #B54334;
+  --sidebar-primary-foreground: #FDF8F3;
+  --sidebar-accent: #F5EBE0;
+  --sidebar-accent-foreground: #3D2314;
+  --sidebar-border: #D9C4B0;
+  --sidebar-ring: #B54334;
+
+  /* 自訂閩南風格變數 */
+  --brick-red: #B54334;
+  --brick-red-dark: #8B3328;
+  --brick-red-light: #D4756A;
+  --terracotta: #F5EBE0;
+  --terracotta-dark: #E8D4C4;
+  --dark-ochre: #4A2C2A;
+  --wood-brown: #3D2314;
+  --wood-brown-light: #6B5344;
+  --warm-white: #FDF8F3;
+  --moss-green: #5B7A5B;
+  --glaze-yellow: #C9A227;
+}
+
+.dark {
+  /* 深色模式 - 閩南風格 */
+  --background: #4A2C2A;
+  --foreground: #FDF8F3;
+  --card: #5A3C3A;
+  --card-foreground: #FDF8F3;
+  --popover: #5A3C3A;
+  --popover-foreground: #FDF8F3;
+  --primary: #D4756A;
+  --primary-foreground: #3D2314;
+  --secondary: #6B4C4A;
+  --secondary-foreground: #FDF8F3;
+  --muted: #6B4C4A;
+  --muted-foreground: #D9C4B0;
+  --accent: #6B4C4A;
+  --accent-foreground: #FDF8F3;
+  --destructive: #E05A4A;
+  --border: rgba(253, 248, 243, 0.15);
+  --input: rgba(253, 248, 243, 0.15);
+  --ring: #D4756A;
+  --chart-1: #D4756A;
+  --chart-2: #7A9A7A;
+  --chart-3: #D9B237;
+  --chart-4: #B5A090;
+  --chart-5: #E08070;
+  --sidebar: #5A3C3A;
+  --sidebar-foreground: #FDF8F3;
+  --sidebar-primary: #D4756A;
+  --sidebar-primary-foreground: #3D2314;
+  --sidebar-accent: #6B4C4A;
+  --sidebar-accent-foreground: #FDF8F3;
+  --sidebar-border: rgba(253, 248, 243, 0.15);
+  --sidebar-ring: #D4756A;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}

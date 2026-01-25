@@ -1,0 +1,54 @@
+services:
+  frontend:
+    build:
+      context: .
+      args:
+        NEXT_PUBLIC_API_URL: http://backend:8000
+        NEXT_PUBLIC_SITE_URL: http://localhost:3000
+        NEXT_PUBLIC_SITE_NAME: 梅鶴山莊 | Meihe Villa
+    ports:
+      - "3000:3000"
+    environment:
+      - NEXT_PUBLIC_API_URL=http://backend:8000
+      - NEXT_PUBLIC_SITE_URL=http://localhost:3000
+    depends_on:
+      - backend
+    networks:
+      - meihe-network
+
+  backend:
+    build:
+      context: ../backend
+    ports:
+      - "8000:8000"
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@db:5432/meihe
+      - CORS_ORIGINS=["http://localhost:3000","http://frontend:3000"]
+    depends_on:
+      db:
+        condition: service_healthy
+    networks:
+      - meihe-network
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=meihe
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - meihe-network
+
+networks:
+  meihe-network:
+    driver: bridge
+
+volumes:
+  postgres_data:

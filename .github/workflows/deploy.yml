@@ -1,0 +1,185 @@
+name: Deploy to AWS EC2
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+env:
+  AWS_REGION: us-east-2
+  ECR_REPOSITORY: meihe-villa-frontend
+  CONTAINER_NAME: meihe-frontend
+  EC2_HOST: 3.144.76.155
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build, tag, and push image to Amazon ECR
+        id: build-image
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        run: |
+          docker build \
+            --build-arg NEXT_PUBLIC_API_URL=${{ secrets.NEXT_PUBLIC_API_URL }} \
+            --build-arg NEXT_PUBLIC_SITE_URL=${{ secrets.NEXT_PUBLIC_SITE_URL }} \
+            --build-arg NEXT_PUBLIC_SITE_NAME="${{ secrets.NEXT_PUBLIC_SITE_NAME }}" \
+            --build-arg NEXT_PUBLIC_CDN_URL=${{ secrets.NEXT_PUBLIC_CDN_URL }} \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG \
+            -t $ECR_REGISTRY/$ECR_REPOSITORY:latest \
+            .
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          docker push $ECR_REGISTRY/$ECR_REPOSITORY:latest
+          echo "image=$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG" >> $GITHUB_OUTPUT
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v1.0.3
+        env:
+          ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
+          IMAGE_TAG: ${{ github.sha }}
+        with:
+          host: ${{ env.EC2_HOST }}
+          username: ec2-user
+          key: ${{ secrets.EC2_SSH_PRIVATE_KEY }}
+          envs: ECR_REGISTRY,ECR_REPOSITORY,IMAGE_TAG,AWS_REGION
+          script: |
+            # Login to ECR
+            aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin $ECR_REGISTRY
+
+            # Pull latest image
+            docker pull $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+            # Stop and remove old container
+            docker stop ${{ env.CONTAINER_NAME }} || true
+            docker rm ${{ env.CONTAINER_NAME }} || true
+
+            # Run new container
+            docker run -d \
+              --name ${{ env.CONTAINER_NAME }} \
+              --restart unless-stopped \
+              -p 3000:3000 \
+              $ECR_REGISTRY/$ECR_REPOSITORY:latest
+
+            # Clean up old images
+            docker image prune -af
+
+            # Setup Nginx reverse proxy (if not already configured correctly)
+            if ! nginx -t 2>/dev/null | grep -q "successful"; then
+              sudo yum install -y nginx || true
+            fi
+
+            # Update Nginx config to proxy frontend and backend
+            cat << 'NGINX_CONF' | sudo tee /etc/nginx/nginx.conf
+            worker_processes auto;
+            error_log /var/log/nginx/error.log warn;
+            pid /var/run/nginx.pid;
+            events {
+                worker_connections 1024;
+            }
+            http {
+                include /etc/nginx/mime.types;
+                default_type application/octet-stream;
+                log_format main '$remote_addr - $remote_user [$time_local] "$request" '
+                                '$status $body_bytes_sent "$http_referer" '
+                                '"$http_user_agent"';
+                access_log /var/log/nginx/access.log main;
+                sendfile on;
+                keepalive_timeout 65;
+                client_max_body_size 50M;
+                gzip on;
+                gzip_types text/plain text/css application/json application/javascript text/xml application/xml image/svg+xml;
+                limit_req_zone $binary_remote_addr zone=api_limit:10m rate=10r/s;
+                limit_req_zone $binary_remote_addr zone=general_limit:10m rate=30r/s;
+                server {
+                    listen 80;
+                    server_name _;
+                    add_header X-Frame-Options "SAMEORIGIN" always;
+                    add_header X-Content-Type-Options "nosniff" always;
+                    location /api/ {
+                        limit_req zone=api_limit burst=20 nodelay;
+                        proxy_pass http://127.0.0.1:8000;
+                        proxy_http_version 1.1;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                    location /docs {
+                        proxy_pass http://127.0.0.1:8000;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                    location /redoc {
+                        proxy_pass http://127.0.0.1:8000;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                    location /openapi.json {
+                        proxy_pass http://127.0.0.1:8000;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                    location /health {
+                        proxy_pass http://127.0.0.1:8000;
+                        proxy_set_header Host $host;
+                        access_log off;
+                    }
+                    location /_next/static {
+                        proxy_pass http://127.0.0.1:3000;
+                        proxy_http_version 1.1;
+                        add_header Cache-Control "public, max-age=31536000, immutable";
+                        access_log off;
+                    }
+                    location /_next/ {
+                        proxy_pass http://127.0.0.1:3000;
+                        proxy_http_version 1.1;
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                    }
+                    location / {
+                        limit_req zone=general_limit burst=50 nodelay;
+                        proxy_pass http://127.0.0.1:3000;
+                        proxy_http_version 1.1;
+                        proxy_set_header Upgrade $http_upgrade;
+                        proxy_set_header Connection "upgrade";
+                        proxy_set_header Host $host;
+                        proxy_set_header X-Real-IP $remote_addr;
+                        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+                        proxy_set_header X-Forwarded-Proto $scheme;
+                        proxy_cache_bypass $http_upgrade;
+                    }
+                }
+            }
+            NGINX_CONF
+
+            sudo nginx -t && sudo systemctl restart nginx && sudo systemctl enable nginx
+
+      - name: Health check
+        run: |
+          sleep 10
+          curl -f http://${{ env.EC2_HOST }}:3000 || exit 1
