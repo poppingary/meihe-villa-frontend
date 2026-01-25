@@ -18,6 +18,7 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { newsService } from '@/services/admin/news';
+import { ImageUpload } from '@/components/admin/common';
 import type { NewsItem, NewsItemCreate } from '@/types/heritage';
 
 interface NewsFormProps {
@@ -241,15 +242,11 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
               />
             </div>
           </div>
-          <div className="space-y-2">
-            <Label htmlFor="featured_image">封面圖片 URL</Label>
-            <Input
-              id="featured_image"
-              value={formData.featured_image || ''}
-              onChange={(e) => handleChange('featured_image', e.target.value)}
-              placeholder="https://..."
-            />
-          </div>
+          <ImageUpload
+            label="封面圖片"
+            value={formData.featured_image || ''}
+            onChange={(url) => handleChange('featured_image', url)}
+          />
           <div className="flex items-center gap-2">
             <Switch
               id="is_published"
