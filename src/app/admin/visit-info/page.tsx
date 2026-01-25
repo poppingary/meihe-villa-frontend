@@ -109,12 +109,12 @@ export default function VisitInfoPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">參觀資訊管理</h2>
-          <p className="text-muted-foreground">管理開放時間、票價、交通等資訊</p>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">參觀資訊管理</h2>
+          <p className="text-sm text-muted-foreground">管理開放時間、票價、交通等資訊</p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/admin/visit-info/new">
             <Plus className="mr-2 h-4 w-4" />
             新增區塊

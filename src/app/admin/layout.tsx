@@ -1,6 +1,5 @@
 import { AuthProvider } from '@/components/admin/auth';
-import { AdminSidebar } from '@/components/admin/layout/AdminSidebar';
-import { AdminHeader } from '@/components/admin/layout/AdminHeader';
+import { AdminLayoutClient } from '@/components/admin/layout/AdminLayoutClient';
 import { Toaster } from '@/components/ui/sonner';
 
 export const metadata = {
@@ -15,13 +14,7 @@ export default function AdminLayout({
 }) {
   return (
     <AuthProvider>
-      <div className="min-h-screen bg-muted/30">
-        <AdminSidebar />
-        <div className="pl-64">
-          <AdminHeader />
-          <main className="p-6">{children}</main>
-        </div>
-      </div>
+      <AdminLayoutClient>{children}</AdminLayoutClient>
       <Toaster />
     </AuthProvider>
   );

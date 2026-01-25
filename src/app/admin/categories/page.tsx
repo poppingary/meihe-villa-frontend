@@ -145,14 +145,14 @@ export default function CategoriesPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">分類管理</h2>
-          <p className="text-muted-foreground">管理古蹟景點分類</p>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">分類管理</h2>
+          <p className="text-sm text-muted-foreground">管理古蹟景點分類</p>
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button onClick={() => handleOpenDialog()}>
+            <Button onClick={() => handleOpenDialog()} className="w-full sm:w-auto">
               <Plus className="mr-2 h-4 w-4" />
               新增分類
             </Button>

@@ -158,12 +158,12 @@ export default function TimelinePage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">時間軸管理</h2>
-          <p className="text-muted-foreground">管理歷史事件時間軸</p>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">時間軸管理</h2>
+          <p className="text-sm text-muted-foreground">管理歷史事件時間軸</p>
         </div>
-        <Button asChild>
+        <Button asChild className="w-full sm:w-auto">
           <Link href="/admin/timeline/new">
             <Plus className="mr-2 h-4 w-4" />
             新增事件
@@ -173,7 +173,7 @@ export default function TimelinePage() {
 
       <div className="flex gap-4">
         <Select value={categoryFilter || 'all'} onValueChange={(v) => setCategoryFilter(v === 'all' ? '' : v)}>
-          <SelectTrigger className="w-[180px]">
+          <SelectTrigger className="w-full sm:w-[180px]">
             <SelectValue placeholder="篩選分類" />
           </SelectTrigger>
           <SelectContent>

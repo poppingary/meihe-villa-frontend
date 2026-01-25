@@ -143,10 +143,10 @@ export default function MediaLibraryPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
+      <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div>
-          <h2 className="text-2xl font-bold tracking-tight">媒體庫</h2>
-          <p className="text-muted-foreground">管理圖片和影片檔案</p>
+          <h2 className="text-xl font-bold tracking-tight sm:text-2xl">媒體庫</h2>
+          <p className="text-sm text-muted-foreground">管理圖片和影片檔案</p>
         </div>
         <div className="flex items-center gap-2">
           <input
@@ -158,7 +158,7 @@ export default function MediaLibraryPage() {
             onChange={handleFileUpload}
             disabled={isUploading}
           />
-          <Button asChild disabled={isUploading}>
+          <Button asChild disabled={isUploading} className="w-full sm:w-auto">
             <label htmlFor="file-upload" className="cursor-pointer">
               <Upload className="mr-2 h-4 w-4" />
               {isUploading ? '上傳中...' : '上傳檔案'}
@@ -168,14 +168,14 @@ export default function MediaLibraryPage() {
       </div>
 
       {/* Filters */}
-      <div className="flex flex-wrap gap-4">
-        <div className="flex gap-2">
+      <div className="flex flex-wrap items-center gap-3 sm:gap-4">
+        <div className="flex w-full gap-2 sm:w-auto">
           <Input
             placeholder="搜尋檔案名稱..."
             value={searchInput}
             onChange={(e) => setSearchInput(e.target.value)}
             onKeyDown={(e) => e.key === 'Enter' && handleSearch()}
-            className="w-64"
+            className="w-full sm:w-48 md:w-64"
           />
           <Button variant="outline" onClick={handleSearch}>
             <Search className="h-4 w-4" />
@@ -183,7 +183,7 @@ export default function MediaLibraryPage() {
         </div>
 
         <Select value={category || 'all'} onValueChange={(v) => { setCategory(v === 'all' ? '' : v); setPage(1); }}>
-          <SelectTrigger className="w-[150px]">
+          <SelectTrigger className="w-[130px] sm:w-[150px]">
             <SelectValue placeholder="所有類型" />
           </SelectTrigger>
           <SelectContent>
@@ -193,7 +193,7 @@ export default function MediaLibraryPage() {
           </SelectContent>
         </Select>
 
-        <div className="flex gap-1 ml-auto">
+        <div className="ml-auto flex gap-1">
           <Button
             variant={viewMode === 'grid' ? 'default' : 'outline'}
             size="sm"
@@ -248,8 +248,10 @@ export default function MediaLibraryPage() {
               ))}
             </div>
           ) : (
-            <div className="rounded-md border">
-              <table className="w-full">
+            <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+              <div className="inline-block min-w-full align-middle">
+                <div className="rounded-md border">
+                  <table className="min-w-[700px] w-full">
                 <thead>
                   <tr className="border-b bg-muted/50">
                     <th className="text-left p-3 font-medium">預覽</th>
@@ -317,6 +319,8 @@ export default function MediaLibraryPage() {
                   ))}
                 </tbody>
               </table>
+                </div>
+              </div>
             </div>
           )}
 
@@ -355,13 +359,13 @@ export default function MediaLibraryPage() {
 
       {/* Media Detail Dialog */}
       <Dialog open={!!selectedMedia} onOpenChange={(open) => !open && setSelectedMedia(null)}>
-        <DialogContent className="max-w-3xl">
+        <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>媒體詳情</DialogTitle>
           </DialogHeader>
           {selectedMedia && (
-            <div className="grid md:grid-cols-2 gap-6">
-              <div className="aspect-square rounded-lg overflow-hidden bg-muted">
+            <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
+              <div className="aspect-video rounded-lg overflow-hidden bg-muted sm:aspect-square">
                 {selectedMedia.category === 'images' ? (
                   <img
                     src={selectedMedia.public_url}

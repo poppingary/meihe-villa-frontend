@@ -152,7 +152,7 @@ export function HeritageForm({ site, isNew = false }: HeritageFormProps) {
               <CardTitle>Basic Info (English)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="name">Name (English) *</Label>
                   <Input
@@ -201,7 +201,7 @@ export function HeritageForm({ site, isNew = false }: HeritageFormProps) {
           <CardTitle>位置資訊</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="city">城市</Label>
               <Input
@@ -237,7 +237,7 @@ export function HeritageForm({ site, isNew = false }: HeritageFormProps) {
               onChange={(e) => handleChange('address', e.target.value)}
             />
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="latitude">緯度</Label>
               <Input

@@ -158,7 +158,7 @@ export function TimelineForm({ event, isNew = false }: TimelineFormProps) {
           <CardTitle>日期資訊</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-3">
+          <div className="grid gap-3 grid-cols-3 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="year">西元年 *</Label>
               <Input
@@ -198,7 +198,7 @@ export function TimelineForm({ event, isNew = false }: TimelineFormProps) {
               />
             </div>
           </div>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="era">年號</Label>
               <Input
@@ -226,7 +226,7 @@ export function TimelineForm({ event, isNew = false }: TimelineFormProps) {
           <CardTitle>分類與設定</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">分類</Label>
               <Select

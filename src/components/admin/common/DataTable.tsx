@@ -50,8 +50,10 @@ export function DataTable<T extends { id: string | number }>({
 
   return (
     <div className="space-y-4">
-      <div className="rounded-md border">
-        <Table>
+      <div className="-mx-4 overflow-x-auto px-4 sm:mx-0 sm:px-0">
+        <div className="inline-block min-w-full align-middle">
+          <div className="rounded-md border">
+            <Table className="min-w-[600px]">
           <TableHeader>
             <TableRow>
               {columns.map((column) => (
@@ -84,10 +86,12 @@ export function DataTable<T extends { id: string | number }>({
             )}
           </TableBody>
         </Table>
+          </div>
+        </div>
       </div>
 
       {totalPages > 1 && onPageChange && (
-        <div className="flex items-center justify-end gap-2">
+        <div className="flex flex-wrap items-center justify-center gap-2 sm:justify-end">
           <Button
             variant="outline"
             size="sm"
@@ -95,10 +99,10 @@ export function DataTable<T extends { id: string | number }>({
             disabled={page <= 1}
           >
             <ChevronLeft className="h-4 w-4" />
-            上一頁
+            <span className="hidden sm:inline">上一頁</span>
           </Button>
           <span className="text-sm text-muted-foreground">
-            第 {page} 頁，共 {totalPages} 頁
+            {page} / {totalPages}
           </span>
           <Button
             variant="outline"
@@ -106,7 +110,7 @@ export function DataTable<T extends { id: string | number }>({
             onClick={() => onPageChange(page + 1)}
             disabled={page >= totalPages}
           >
-            下一頁
+            <span className="hidden sm:inline">下一頁</span>
             <ChevronRight className="h-4 w-4" />
           </Button>
         </div>

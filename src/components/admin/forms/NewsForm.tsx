@@ -152,7 +152,7 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
               <CardTitle>Content (English)</CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              <div className="grid gap-4 md:grid-cols-2">
+              <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="title">Title (English) *</Label>
                   <Input
@@ -203,7 +203,7 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
           <CardTitle>設定</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="category">分類</Label>
               <Select

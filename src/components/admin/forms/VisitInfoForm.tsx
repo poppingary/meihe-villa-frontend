@@ -69,7 +69,7 @@ export function VisitInfoForm({ info, isNew = false }: VisitInfoFormProps) {
           <CardTitle>基本設定</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-3 sm:grid-cols-2 sm:gap-4">
             <div className="space-y-2">
               <Label htmlFor="section">區塊代碼 *</Label>
               <Input
