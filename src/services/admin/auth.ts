@@ -1,6 +1,6 @@
 import { LoginRequest, LoginResponse, User } from '@/types/admin/auth';
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || '';
 
 class AuthError extends Error {
   constructor(public status: number, message: string) {

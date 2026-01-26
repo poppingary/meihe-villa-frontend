@@ -56,6 +56,12 @@ export async function deleteMediaFile(id: number): Promise<void> {
   });
 }
 
+export async function deleteMediaByUrl(url: string): Promise<void> {
+  await adminFetch(`/api/v1/media/by-url/delete?url=${encodeURIComponent(url)}`, {
+    method: 'DELETE',
+  });
+}
+
 export async function listFolders(): Promise<string[]> {
   return adminFetch<string[]>('/api/v1/media/folders/list');
 }

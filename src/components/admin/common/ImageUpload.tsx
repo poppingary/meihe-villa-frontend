@@ -1,18 +1,19 @@
 'use client';
 
 import { useState, useCallback } from 'react';
-import { Upload, X, Image as ImageIcon, Loader2 } from 'lucide-react';
+import { Upload, X, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { uploadMedia } from '@/services/admin/media';
+import { uploadMedia, deleteMediaByUrl } from '@/services/admin/media';
 
 interface ImageUploadProps {
   value?: string;
   onChange: (url: string) => void;
   label?: string;
   placeholder?: string;
+  /** When true, deleting an image also removes it from S3 and database */
+  deleteFromStorage?: boolean;
 }
 
 export function ImageUpload({
@@ -20,9 +21,11 @@ export function ImageUpload({
   onChange,
   label = '封面圖片',
   placeholder = '選擇或拖放圖片上傳...',
+  deleteFromStorage = false,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
+  const [isDeleting, setIsDeleting] = useState(false);
 
   const handleUpload = useCallback(
     async (file: File) => {
@@ -76,7 +79,19 @@ export function ImageUpload({
     setIsDragOver(false);
   };
 
-  const handleRemove = () => {
+  const handleRemove = async () => {
+    if (deleteFromStorage && value) {
+      setIsDeleting(true);
+      try {
+        await deleteMediaByUrl(value);
+        toast.success('圖片已刪除');
+      } catch (error) {
+        console.error('Delete failed:', error);
+        toast.error('圖片刪除失敗');
+      } finally {
+        setIsDeleting(false);
+      }
+    }
     onChange('');
   };
 
@@ -97,12 +112,14 @@ export function ImageUpload({
               variant="destructive"
               size="sm"
               onClick={handleRemove}
+              disabled={isDeleting}
             >
-              <X className="h-4 w-4" />
+              {isDeleting ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <X className="h-4 w-4" />
+              )}
             </Button>
-          </div>
-          <div className="p-2 bg-muted/80 text-xs text-muted-foreground truncate">
-            {value}
           </div>
         </div>
       ) : (
@@ -141,16 +158,6 @@ export function ImageUpload({
           </div>
         </div>
       )}
-
-      {/* Manual URL input as fallback */}
-      <div className="flex gap-2 items-center">
-        <Input
-          value={value || ''}
-          onChange={(e) => onChange(e.target.value)}
-          placeholder="或直接輸入圖片 URL..."
-          className="text-sm"
-        />
-      </div>
     </div>
   );
 }

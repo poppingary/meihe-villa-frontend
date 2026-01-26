@@ -12,7 +12,7 @@ export const siteConfig = {
   description_zh:
     '梅鶴山莊是台灣的歷史古蹟，展示傳統建築與豐富的文化歷史。',
   url: process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000',
-  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000',
+  apiUrl: process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888',
   locale: 'zh-TW',
   keywords: [
     '梅鶴山莊',

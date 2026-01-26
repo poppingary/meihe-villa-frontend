@@ -87,6 +87,7 @@ export interface NewsItem {
   content: string | null;
   content_zh: string | null;
   featured_image: string | null;
+  images: string | null; // JSON array of image URLs
   category: string | null;
   is_published: boolean;
   published_at: string | null;
@@ -103,6 +104,7 @@ export interface NewsItemCreate {
   content?: string | null;
   content_zh?: string | null;
   featured_image?: string | null;
+  images?: string | null;
   category?: string | null;
   is_published?: boolean;
   published_at?: string | null;
@@ -117,6 +119,7 @@ export interface NewsItemUpdate {
   content?: string | null;
   content_zh?: string | null;
   featured_image?: string | null;
+  images?: string | null;
   category?: string | null;
   is_published?: boolean | null;
   published_at?: string | null;

@@ -1,8 +1,9 @@
 /**
  * Base API client with SSG caching support.
+ * This is used for server-side rendering (SSR/SSG) which requires full URL.
  */
 
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
+const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
 
 export interface FetchOptions extends RequestInit {
   revalidate?: number | false;

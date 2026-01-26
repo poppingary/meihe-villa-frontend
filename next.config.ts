@@ -20,13 +20,13 @@ const nextConfig: NextConfig = {
   },
   // Proxy API requests in development to avoid cross-origin cookie issues
   async rewrites() {
-    const apiUrl = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8000';
-    // Only proxy in development when API is on different port
-    if (process.env.NODE_ENV === 'development' && apiUrl.includes('localhost:8000')) {
+    const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+    // Only proxy in development when API URL is empty (use local backend)
+    if (process.env.NODE_ENV === 'development' && !apiUrl) {
       return [
         {
           source: '/api/:path*',
-          destination: `${apiUrl}/api/:path*`,
+          destination: 'http://localhost:8888/api/:path*',
         },
       ];
     }

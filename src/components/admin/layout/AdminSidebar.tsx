@@ -10,9 +10,11 @@ import {
   Clock,
   Info,
   Image,
+  Users,
   X,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useAuth } from '@/components/admin/auth/AuthProvider';
 
 const navItems = [
   { href: '/admin', label: 'Dashboard', icon: LayoutDashboard },
@@ -24,6 +26,10 @@ const navItems = [
   { href: '/admin/media', label: '媒體庫', icon: Image },
 ];
 
+const superadminNavItems = [
+  { href: '/admin/users', label: '帳號管理', icon: Users },
+];
+
 interface AdminSidebarProps {
   isOpen?: boolean;
   onClose?: () => void;
@@ -31,6 +37,7 @@ interface AdminSidebarProps {
 
 export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
   const pathname = usePathname();
+  const { user } = useAuth();
 
   const handleNavClick = () => {
     // Close drawer on mobile when nav item clicked
@@ -38,6 +45,11 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
       onClose();
     }
   };
+
+  // Combine nav items based on user role
+  const allNavItems = user?.role === 'superadmin'
+    ? [...navItems, ...superadminNavItems]
+    : navItems;
 
   return (
     <>
@@ -75,7 +87,7 @@ export function AdminSidebar({ isOpen = false, onClose }: AdminSidebarProps) {
           </button>
         </div>
         <nav className="space-y-1 p-4">
-          {navItems.map((item) => {
+          {allNavItems.map((item) => {
             const isActive =
               pathname === item.href ||
               (item.href !== '/admin' && pathname.startsWith(item.href));

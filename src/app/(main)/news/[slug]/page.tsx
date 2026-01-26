@@ -6,6 +6,17 @@ import { Button } from '@/components/ui/Button';
 import { getNewsItemBySlug, getAllNewsSlugs } from '@/services/news';
 import { cdnUrl } from '@/lib/cdn';
 
+// Helper to parse images JSON string to array
+function parseImages(images: string | null | undefined): string[] {
+  if (!images) return [];
+  try {
+    const parsed = JSON.parse(images);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
+
 interface PageProps {
   params: Promise<{ slug: string }>;
 }
@@ -191,6 +202,30 @@ export default async function NewsDetailPage({ params }: PageProps) {
                 );
               })}
             </div>
+
+            {/* Related Images Gallery */}
+            {parseImages(newsItem.images).length > 0 && (
+              <div className="mt-12">
+                <h2 className="mb-6 text-xl font-bold text-stone-800">相關圖片</h2>
+                <div className="grid grid-cols-2 gap-4 md:grid-cols-3">
+                  {parseImages(newsItem.images).map((imageUrl, index) => (
+                    <a
+                      key={index}
+                      href={imageUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="group overflow-hidden rounded-lg"
+                    >
+                      <img
+                        src={imageUrl}
+                        alt={`相關圖片 ${index + 1}`}
+                        className="h-48 w-full object-cover transition-transform group-hover:scale-105"
+                      />
+                    </a>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Navigation */}
             <div className="mt-12 flex justify-center">

@@ -18,8 +18,19 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { newsService } from '@/services/admin/news';
-import { ImageUpload } from '@/components/admin/common';
+import { ImageUpload, MultiImageUpload } from '@/components/admin/common';
 import type { NewsItem, NewsItemCreate } from '@/types/heritage';
+
+// Helper to parse images JSON string to array
+function parseImages(images: string | null | undefined): string[] {
+  if (!images) return [];
+  try {
+    const parsed = JSON.parse(images);
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 interface NewsFormProps {
   news?: NewsItem;
@@ -47,10 +58,18 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
     content: news?.content || '',
     content_zh: news?.content_zh || '',
     featured_image: news?.featured_image || '',
+    images: news?.images || '',
     category: news?.category || '',
     is_published: news?.is_published || false,
     published_at: news?.published_at || null,
   });
+
+  // Parse images for the MultiImageUpload component
+  const imagesArray = parseImages(formData.images);
+
+  const handleImagesChange = (urls: string[]) => {
+    handleChange('images', JSON.stringify(urls));
+  };
 
   const handleChange = (
     field: keyof NewsItemCreate,
@@ -201,6 +220,29 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
 
       <Card>
         <CardHeader>
+          <CardTitle>圖片</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-6">
+          <ImageUpload
+            label="封面圖片"
+            value={formData.featured_image || ''}
+            onChange={(url) => handleChange('featured_image', url)}
+            deleteFromStorage
+          />
+          <div className="border-t pt-6">
+            <MultiImageUpload
+              label="相關圖片"
+              value={imagesArray}
+              onChange={handleImagesChange}
+              maxImages={10}
+              deleteFromStorage
+            />
+          </div>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>設定</CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
@@ -242,11 +284,6 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
               />
             </div>
           </div>
-          <ImageUpload
-            label="封面圖片"
-            value={formData.featured_image || ''}
-            onChange={(url) => handleChange('featured_image', url)}
-          />
           <div className="flex items-center gap-2">
             <Switch
               id="is_published"

@@ -25,11 +25,22 @@ export function MapSection({
     <section className={cn('py-16 md:py-24', className)}>
       <Container>
         <div className="overflow-hidden rounded-lg bg-white shadow-lg">
-          {/* Map Placeholder */}
+          {/* Map - prioritize coordinates when available */}
           <div className="aspect-video bg-stone-200">
             {hasCoordinates ? (
               <iframe
-                src={`https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3000!2d${longitude}!3d${latitude}!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x0%3A0x0!2zM!5e0!3m2!1szh-TW!2stw!4v1600000000000!5m2!1szh-TW!2stw`}
+                src={`https://maps.google.com/maps?q=${latitude},${longitude}&z=17&output=embed&hl=zh-TW`}
+                width="100%"
+                height="100%"
+                style={{ border: 0 }}
+                allowFullScreen
+                loading="lazy"
+                referrerPolicy="no-referrer-when-downgrade"
+                title="地圖"
+              />
+            ) : address ? (
+              <iframe
+                src={`https://maps.google.com/maps?q=${latitude},${longitude}&z=17&output=embed&hl=zh-TW`}
                 width="100%"
                 height="100%"
                 style={{ border: 0 }}
