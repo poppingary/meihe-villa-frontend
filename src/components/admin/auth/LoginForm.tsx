@@ -58,6 +58,7 @@ export function LoginForm() {
         <CardTitle className="text-2xl text-center">梅鶴山莊 CMS</CardTitle>
         <CardDescription className="text-center">
           請輸入帳號密碼登入後台管理系統
+          <span className="block text-xs text-gray-400 mt-1">Build: 20260128-0430</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
