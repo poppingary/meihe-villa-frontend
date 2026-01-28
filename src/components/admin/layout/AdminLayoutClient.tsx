@@ -1,14 +1,18 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import { usePathname } from 'next/navigation';
 import { AdminSidebar } from './AdminSidebar';
 import { AdminHeader } from './AdminHeader';
+import { useAuth } from '@/components/admin/auth/AuthProvider';
 
 interface AdminLayoutClientProps {
   children: React.ReactNode;
 }
 
 export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
+  const pathname = usePathname();
+  const { isAuthenticated, isLoading } = useAuth();
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   // Lock body scroll when sidebar is open on mobile
@@ -22,6 +26,16 @@ export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
       document.body.style.overflow = '';
     };
   }, [sidebarOpen]);
+
+  // On login page without auth, show minimal layout
+  const isLoginPage = pathname === '/admin/login';
+  if (isLoginPage && !isLoading && !isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-muted/30">
+        <main className="p-4 md:p-6">{children}</main>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-muted/30">
