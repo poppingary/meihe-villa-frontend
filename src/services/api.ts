@@ -3,6 +3,7 @@
  * This is used for server-side rendering (SSR/SSG) which requires full URL.
  */
 
+// Server-side fetch requires full URL; fallback to localhost:8888 for development
 const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:8888';
 
 export interface FetchOptions extends RequestInit {
