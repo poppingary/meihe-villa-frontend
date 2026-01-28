@@ -23,17 +23,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   });
 
   const checkAuth = useCallback(async () => {
-    console.log('[AuthProvider] checkAuth() called');
     try {
       const user = await authService.checkAuth();
-      console.log('[AuthProvider] checkAuth() result:', user ? 'user found' : 'no user', user);
       setState({
         user,
         isLoading: false,
         isAuthenticated: !!user,
       });
-    } catch (error) {
-      console.log('[AuthProvider] checkAuth() error:', error);
+    } catch {
       setState({
         user: null,
         isLoading: false,
@@ -43,22 +40,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
-    console.log('[AuthProvider] login() called');
-    try {
-      const response = await authService.login({ email, password });
-      console.log('[AuthProvider] login() success, user:', response.user);
-      setState({
-        user: response.user,
-        isLoading: false,
-        isAuthenticated: true,
-      });
-      console.log('[AuthProvider] Redirecting to /admin via window.location');
-      window.location.href = '/admin';
-    } catch (error) {
-      console.log('[AuthProvider] login() error:', error);
-      throw error;
-    }
-  }, []);
+    const response = await authService.login({ email, password });
+    setState({
+      user: response.user,
+      isLoading: false,
+      isAuthenticated: true,
+    });
+    // Use router.replace for client-side navigation after login
+    router.replace('/admin');
+  }, [router]);
 
   const logout = useCallback(async () => {
     await authService.logout();
@@ -67,7 +57,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: false,
       isAuthenticated: false,
     });
-    router.push('/admin/login');
+    router.replace('/admin/login');
   }, [router]);
 
   useEffect(() => {
@@ -76,28 +66,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Redirect unauthenticated users (except on login page)
   useEffect(() => {
-    console.log('[AuthProvider] Redirect check (unauthenticated):', {
-      isLoading: state.isLoading,
-      isAuthenticated: state.isAuthenticated,
-      pathname,
-      shouldRedirect: !state.isLoading && !state.isAuthenticated && pathname !== '/admin/login'
-    });
     if (!state.isLoading && !state.isAuthenticated && pathname !== '/admin/login') {
-      console.log('[AuthProvider] Redirecting to /admin/login');
       router.replace('/admin/login');
     }
   }, [state.isLoading, state.isAuthenticated, pathname, router]);
 
   // Redirect authenticated users away from login page
   useEffect(() => {
-    console.log('[AuthProvider] Redirect check (authenticated):', {
-      isLoading: state.isLoading,
-      isAuthenticated: state.isAuthenticated,
-      pathname,
-      shouldRedirect: !state.isLoading && state.isAuthenticated && pathname === '/admin/login'
-    });
     if (!state.isLoading && state.isAuthenticated && pathname === '/admin/login') {
-      console.log('[AuthProvider] Redirecting to /admin');
       router.replace('/admin');
     }
   }, [state.isLoading, state.isAuthenticated, pathname, router]);

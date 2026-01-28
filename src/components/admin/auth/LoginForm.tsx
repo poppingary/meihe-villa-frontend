@@ -14,12 +14,8 @@ export function LoginForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  console.log('[LoginForm] render:', { authLoading, isAuthenticated, isLoading });
-
   // Show loading while checking auth
-  // If already authenticated, the login() function will redirect
   if (authLoading) {
-    console.log('[LoginForm] showing loading state');
     return (
       <div className="flex min-h-[200px] items-center justify-center">
         <div className="text-muted-foreground">載入中...</div>
@@ -27,10 +23,8 @@ export function LoginForm() {
     );
   }
 
-  // If already authenticated (e.g., navigated to login page while logged in),
-  // show loading and let AuthProvider handle redirect
+  // If already authenticated, show loading while AuthProvider handles redirect
   if (isAuthenticated) {
-    console.log('[LoginForm] showing redirect state (isAuthenticated=true)');
     return (
       <div className="flex min-h-[200px] items-center justify-center">
         <div className="text-muted-foreground">正在跳轉...</div>
@@ -42,14 +36,10 @@ export function LoginForm() {
     e?.preventDefault();
     setError('');
     setIsLoading(true);
-    console.log('[LoginForm] handleSubmit called');
 
     try {
-      console.log('[LoginForm] calling login()');
       await login(email, password);
-      console.log('[LoginForm] login() completed');
     } catch (err) {
-      console.log('[LoginForm] login() error:', err);
       setError(err instanceof Error ? err.message : '登入失敗');
     } finally {
       setIsLoading(false);
@@ -68,7 +58,6 @@ export function LoginForm() {
         <CardTitle className="text-2xl text-center">梅鶴山莊 CMS</CardTitle>
         <CardDescription className="text-center">
           請輸入帳號密碼登入後台管理系統
-          <span className="block text-xs text-gray-400 mt-1">v-debug-2</span>
         </CardDescription>
       </CardHeader>
       <CardContent>
@@ -89,6 +78,7 @@ export function LoginForm() {
               onKeyDown={handleKeyDown}
               required
               disabled={isLoading}
+              autoComplete="email"
             />
           </div>
           <div className="space-y-2">
@@ -101,6 +91,7 @@ export function LoginForm() {
               onKeyDown={handleKeyDown}
               required
               disabled={isLoading}
+              autoComplete="current-password"
             />
           </div>
           <Button type="submit" className="w-full" disabled={isLoading}>
