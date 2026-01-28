@@ -1,6 +1,7 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useAuth } from './AuthProvider';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
@@ -8,11 +9,28 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 
 export function LoginForm() {
-  const { login } = useAuth();
+  const router = useRouter();
+  const { login, isAuthenticated, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+
+  // Redirect to dashboard if already authenticated
+  useEffect(() => {
+    if (!authLoading && isAuthenticated) {
+      router.replace('/admin');
+    }
+  }, [authLoading, isAuthenticated, router]);
+
+  // Show loading while checking auth or redirecting
+  if (authLoading || isAuthenticated) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <div className="text-muted-foreground">載入中...</div>
+      </div>
+    );
+  }
 
   const handleSubmit = async (e?: React.FormEvent) => {
     e?.preventDefault();
