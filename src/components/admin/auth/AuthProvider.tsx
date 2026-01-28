@@ -46,8 +46,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: false,
       isAuthenticated: true,
     });
-    router.push('/admin');
-  }, [router]);
+    // Use window.location for reliable redirect after login
+    window.location.href = '/admin';
+  }, []);
 
   const logout = useCallback(async () => {
     await authService.logout();
