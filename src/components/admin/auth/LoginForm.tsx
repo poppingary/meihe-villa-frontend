@@ -1,7 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState } from 'react';
 import { useAuth } from './AuthProvider';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
@@ -9,25 +8,28 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/Card';
 
 export function LoginForm() {
-  const router = useRouter();
   const { login, isAuthenticated, isLoading: authLoading } = useAuth();
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
-  // Redirect to dashboard if already authenticated
-  useEffect(() => {
-    if (!authLoading && isAuthenticated) {
-      router.replace('/admin');
-    }
-  }, [authLoading, isAuthenticated, router]);
-
-  // Show loading while checking auth or redirecting
-  if (authLoading || isAuthenticated) {
+  // Show loading while checking auth
+  // If already authenticated, the login() function will redirect
+  if (authLoading) {
     return (
       <div className="flex min-h-[200px] items-center justify-center">
         <div className="text-muted-foreground">載入中...</div>
+      </div>
+    );
+  }
+
+  // If already authenticated (e.g., navigated to login page while logged in),
+  // show loading and let AuthProvider handle redirect
+  if (isAuthenticated) {
+    return (
+      <div className="flex min-h-[200px] items-center justify-center">
+        <div className="text-muted-foreground">正在跳轉...</div>
       </div>
     );
   }
