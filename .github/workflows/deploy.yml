@@ -66,9 +66,11 @@ jobs:
             # Pull specific image by commit SHA (not latest)
             docker pull $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
 
-            # Stop and remove old container
-            docker stop ${{ env.CONTAINER_NAME }} || true
-            docker rm ${{ env.CONTAINER_NAME }} || true
+            # Force stop and remove old container
+            docker rm -f ${{ env.CONTAINER_NAME }} || true
+
+            # Wait for port to be released
+            sleep 3
 
             # Run new container with specific image tag
             docker run -d \
