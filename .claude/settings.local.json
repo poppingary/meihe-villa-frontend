@@ -40,7 +40,9 @@
       "Bash(sips:*)",
       "Bash(done)",
       "Bash(aws s3 cp:*)",
-      "Bash(pkill:*)"
+      "Bash(pkill:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill:*)"
     ]
   }
 }

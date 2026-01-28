@@ -14,9 +14,12 @@ export function LoginForm() {
   const [error, setError] = useState('');
   const [isLoading, setIsLoading] = useState(false);
 
+  console.log('[LoginForm] render:', { authLoading, isAuthenticated, isLoading });
+
   // Show loading while checking auth
   // If already authenticated, the login() function will redirect
   if (authLoading) {
+    console.log('[LoginForm] showing loading state');
     return (
       <div className="flex min-h-[200px] items-center justify-center">
         <div className="text-muted-foreground">載入中...</div>
@@ -27,6 +30,7 @@ export function LoginForm() {
   // If already authenticated (e.g., navigated to login page while logged in),
   // show loading and let AuthProvider handle redirect
   if (isAuthenticated) {
+    console.log('[LoginForm] showing redirect state (isAuthenticated=true)');
     return (
       <div className="flex min-h-[200px] items-center justify-center">
         <div className="text-muted-foreground">正在跳轉...</div>
@@ -38,10 +42,14 @@ export function LoginForm() {
     e?.preventDefault();
     setError('');
     setIsLoading(true);
+    console.log('[LoginForm] handleSubmit called');
 
     try {
+      console.log('[LoginForm] calling login()');
       await login(email, password);
+      console.log('[LoginForm] login() completed');
     } catch (err) {
+      console.log('[LoginForm] login() error:', err);
       setError(err instanceof Error ? err.message : '登入失敗');
     } finally {
       setIsLoading(false);
