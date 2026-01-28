@@ -17,6 +17,7 @@ import {
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
@@ -388,6 +389,7 @@ export default function MediaLibraryPage() {
         <DialogContent className="sm:max-w-3xl">
           <DialogHeader>
             <DialogTitle>媒體詳情</DialogTitle>
+            <DialogDescription>查看和編輯媒體檔案資訊</DialogDescription>
           </DialogHeader>
           {selectedMedia && (
             <div className="grid gap-4 sm:grid-cols-2 sm:gap-6">
