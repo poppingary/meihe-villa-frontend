@@ -46,9 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: false,
       isAuthenticated: true,
     });
-    // Use router.replace for client-side navigation after login
-    router.replace('/admin');
-  }, [router]);
+    // Redirect is handled by useEffect when isAuthenticated becomes true
+  }, []);
 
   const logout = useCallback(async () => {
     await authService.logout();
