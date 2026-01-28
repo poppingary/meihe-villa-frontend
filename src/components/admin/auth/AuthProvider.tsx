@@ -66,16 +66,32 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Redirect unauthenticated users (except on login page)
   useEffect(() => {
     if (!state.isLoading && !state.isAuthenticated && pathname !== '/admin/login') {
-      router.push('/admin/login');
+      router.replace('/admin/login');
     }
   }, [state.isLoading, state.isAuthenticated, pathname, router]);
 
   // Redirect authenticated users away from login page
   useEffect(() => {
     if (!state.isLoading && state.isAuthenticated && pathname === '/admin/login') {
-      router.push('/admin');
+      router.replace('/admin');
     }
   }, [state.isLoading, state.isAuthenticated, pathname, router]);
+
+  // Show loading or prevent render during redirect scenarios
+  const isRedirecting =
+    !state.isLoading &&
+    ((state.isAuthenticated && pathname === '/admin/login') ||
+      (!state.isAuthenticated && pathname !== '/admin/login'));
+
+  if (state.isLoading || isRedirecting) {
+    return (
+      <AuthContext.Provider value={{ ...state, login, logout, checkAuth }}>
+        <div className="flex min-h-screen items-center justify-center">
+          <div className="text-muted-foreground">載入中...</div>
+        </div>
+      </AuthContext.Provider>
+    );
+  }
 
   return (
     <AuthContext.Provider value={{ ...state, login, logout, checkAuth }}>
