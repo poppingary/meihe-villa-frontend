@@ -38,7 +38,7 @@ export default async function GalleryPage() {
     const images = parseImages(site.images);
     images.forEach((src, index) => {
       allImages.push({
-        src,
+        src: cdnUrl(src),
         alt: `${siteName} - 照片 ${index + 1}`,
         category: siteName,
       });
