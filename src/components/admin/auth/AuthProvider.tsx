@@ -73,9 +73,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Redirect authenticated users away from login page
   useEffect(() => {
     if (!state.isLoading && state.isAuthenticated && pathname === '/admin/login') {
-      router.replace('/admin');
+      window.location.href = '/admin';
     }
-  }, [state.isLoading, state.isAuthenticated, pathname, router]);
+  }, [state.isLoading, state.isAuthenticated, pathname]);
 
   return (
     <AuthContext.Provider value={{ ...state, login, logout, checkAuth }}>

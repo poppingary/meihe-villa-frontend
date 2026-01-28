@@ -27,12 +27,12 @@ export function AdminLayoutClient({ children }: AdminLayoutClientProps) {
     };
   }, [sidebarOpen]);
 
-  // On login page without auth, show minimal layout
+  // On login page, show minimal layout (no sidebar/header)
   const isLoginPage = pathname === '/admin/login';
-  if (isLoginPage && !isLoading && !isAuthenticated) {
+  if (isLoginPage) {
     return (
-      <div className="min-h-screen bg-muted/30">
-        <main className="p-4 md:p-6">{children}</main>
+      <div className="min-h-screen bg-muted/30 flex items-center justify-center">
+        <main className="p-4 md:p-6 w-full max-w-md">{children}</main>
       </div>
     );
   }
