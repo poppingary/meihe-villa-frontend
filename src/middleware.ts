@@ -11,19 +11,25 @@ export function middleware(request: NextRequest) {
 
   // Skip login page
   if (pathname === '/admin/login') {
-    return NextResponse.next();
+    const response = NextResponse.next();
+    response.headers.set('X-Middleware-Debug', 'login-page-skipped');
+    return response;
   }
 
   // Check for auth cookie
   const token = request.cookies.get('access_token');
+  const allCookies = request.cookies.getAll().map(c => c.name).join(',');
 
   if (!token) {
     const loginUrl = new URL('/admin/login', request.url);
     loginUrl.searchParams.set('from', pathname);
+    loginUrl.searchParams.set('debug', `no-token-cookies:${allCookies || 'none'}`);
     return NextResponse.redirect(loginUrl);
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  response.headers.set('X-Middleware-Debug', 'token-found');
+  return response;
 }
 
 export const config = {
