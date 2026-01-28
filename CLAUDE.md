@@ -81,7 +81,8 @@ src/
 │   │   ├── news/               # News management
 │   │   ├── timeline/           # Timeline management
 │   │   ├── visit-info/         # Visit info management
-│   │   └── media/              # Media library (S3)
+│   │   ├── media/              # Media library (S3)
+│   │   └── users/              # Account management (superadmin only)
 │   ├── layout.tsx              # Root layout
 │   ├── globals.css             # Global styles
 │   ├── not-found.tsx           # 404 page
@@ -103,11 +104,17 @@ src/
 │   ├── timeline.ts             # Timeline endpoints
 │   ├── visit-info.ts           # Visit info endpoints
 │   ├── media.ts                # Media library endpoints
-│   └── auth.ts                 # Authentication endpoints
+│   ├── auth.ts                 # Authentication endpoints
+│   └── admin/                  # Admin-specific services
+│       ├── auth.ts             # Admin auth with cookie handling
+│       ├── users.ts            # User management endpoints
+│       └── visitInfo.ts        # Visit info CRUD operations
 ├── types/                      # TypeScript interfaces
 │   ├── heritage.ts             # Heritage/Category types
 │   ├── api.ts                  # API response types
-│   └── common.ts               # Common types
+│   ├── common.ts               # Common types
+│   └── admin/
+│       └── auth.ts             # User, AuthState, LoginCredentials types
 ├── lib/                        # Utilities
 │   ├── utils.ts                # cn(), parseImages(), formatDate()
 │   ├── constants.ts            # Revalidation times, breakpoints
@@ -165,6 +172,10 @@ Set `NEXT_PUBLIC_API_URL=` (empty) in `.env.local` for development.
 | POST | `/api/v1/auth/login` | Login (returns JWT cookie) |
 | POST | `/api/v1/auth/logout` | Logout |
 | GET | `/api/v1/auth/me` | Get current user |
+| GET | `/api/v1/users` | List users (superadmin only) |
+| POST | `/api/v1/users` | Create user (superadmin only) |
+| PATCH | `/api/v1/users/{id}` | Update user (superadmin only) |
+| DELETE | `/api/v1/users/{id}` | Delete user (superadmin only) |
 
 ## Component Patterns
 
@@ -220,8 +231,11 @@ The admin panel is accessible at `/admin` and requires authentication.
 
 - Uses JWT tokens stored in httpOnly cookies
 - Login at `/admin/login`
-- AuthProvider context manages auth state
-- Protected routes redirect to login if not authenticated
+- AuthProvider context manages auth state and redirects:
+  - Unauthenticated users → redirect to `/admin/login`
+  - Authenticated users on `/admin/login` → redirect to `/admin`
+- Role-based access: `admin` (管理員) and `superadmin` (最高管理員)
+- Only superadmin can access account management (`/admin/users`)
 
 ### Admin Features
 
@@ -231,6 +245,7 @@ The admin panel is accessible at `/admin` and requires authentication.
 - **Timeline**: Manage historical timeline events
 - **Visit Info**: Update visiting hours, tickets, etc.
 - **Media Library**: Upload and manage images/videos on S3
+- **Account Management**: Manage admin users (superadmin only)
 
 ## Content Requirements
 
@@ -297,6 +312,41 @@ docker-compose -f docker-compose.prod.yml --profile with-nginx up -d
 ```
 
 See `docs/DEPLOYMENT.md` for detailed setup instructions.
+
+## Data Formats
+
+### VisitInfo extra_data (Bilingual Key-Value Pairs)
+
+The `extra_data` field stores bilingual key-value pairs as JSON. Keys are display labels, not variable names.
+
+**JSON Format:**
+- Chinese keys: No suffix (e.g., `電話`, `地址`)
+- English keys: `_en` suffix (e.g., `phone_en`, `address_en`)
+
+**Example:**
+```json
+{
+  "電話": "03-332-2592",
+  "地址": "335桃園市大溪區福安里頭寮一路111號",
+  "phone_en": "03-332-2592",
+  "address_en": "No. 111, Touliao 1st Road, Daxi District, Taoyuan City 335, Taiwan"
+}
+```
+
+**Admin Form Display (VisitInfoForm.tsx):**
+- Chinese tab: Shows keys without `_en` suffix with Chinese values
+- English tab: Shows keys with `_en` suffix stripped with English values
+
+**Parsing Logic:**
+```typescript
+// Keys ending with _en go to English pairs (suffix stripped)
+// Other keys go to Chinese pairs
+if (key.endsWith('_en')) {
+  enPairs.push({ key: key.slice(0, -3), value });
+} else {
+  zhPairs.push({ key, value });
+}
+```
 
 ## Development Notes
 
