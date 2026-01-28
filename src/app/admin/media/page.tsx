@@ -1,7 +1,7 @@
 'use client';
 
 import { useEffect, useState, useCallback } from 'react';
-import { Upload, Trash2, Search, Grid, List, Image as ImageIcon, Video } from 'lucide-react';
+import { Upload, Trash2, Search, Grid, List, Image as ImageIcon, Video, Save } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/Button';
 import { Input } from '@/components/ui/input';
@@ -37,6 +37,8 @@ export default function MediaLibraryPage() {
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
   const [selectedMedia, setSelectedMedia] = useState<MediaFile | null>(null);
   const [deleteTarget, setDeleteTarget] = useState<MediaFile | null>(null);
+  const [editFilename, setEditFilename] = useState('');
+  const [editAltText, setEditAltText] = useState('');
 
   // Filters
   const [page, setPage] = useState(1);
@@ -121,7 +123,31 @@ export default function MediaLibraryPage() {
     }
   };
 
-  const handleUpdateMetadata = async (data: { alt_text_zh?: string }) => {
+  // Sync edit state when selectedMedia changes
+  useEffect(() => {
+    if (selectedMedia) {
+      setEditFilename(selectedMedia.original_filename);
+      setEditAltText(selectedMedia.alt_text_zh || '');
+    }
+  }, [selectedMedia]);
+
+  const handleSave = async () => {
+    if (!selectedMedia) return;
+    const data: { original_filename?: string; alt_text_zh?: string } = {};
+    if (editFilename.trim() && editFilename.trim() !== selectedMedia.original_filename) {
+      data.original_filename = editFilename.trim();
+    }
+    if (editAltText !== (selectedMedia.alt_text_zh || '')) {
+      data.alt_text_zh = editAltText || undefined;
+    }
+    if (Object.keys(data).length === 0) {
+      toast.info('沒有變更');
+      return;
+    }
+    await handleUpdateMetadata(data);
+  };
+
+  const handleUpdateMetadata = async (data: { alt_text_zh?: string; original_filename?: string }) => {
     if (!selectedMedia) return;
     try {
       const updated = await updateMediaFile(selectedMedia.id, data);
@@ -382,8 +408,13 @@ export default function MediaLibraryPage() {
               </div>
               <div className="space-y-4">
                 <div>
-                  <Label className="text-muted-foreground">檔案名稱</Label>
-                  <p className="font-medium break-all">{selectedMedia.original_filename}</p>
+                  <Label htmlFor="original_filename">檔案名稱</Label>
+                  <Input
+                    id="original_filename"
+                    value={editFilename}
+                    onChange={(e) => setEditFilename(e.target.value)}
+                    placeholder="輸入檔案名稱..."
+                  />
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
@@ -420,16 +451,16 @@ export default function MediaLibraryPage() {
                   <Label htmlFor="alt_text_zh">替代文字 (中文)</Label>
                   <Input
                     id="alt_text_zh"
-                    defaultValue={selectedMedia.alt_text_zh || ''}
-                    onBlur={(e) => {
-                      if (e.target.value !== (selectedMedia.alt_text_zh || '')) {
-                        handleUpdateMetadata({ alt_text_zh: e.target.value || undefined });
-                      }
-                    }}
+                    value={editAltText}
+                    onChange={(e) => setEditAltText(e.target.value)}
                     placeholder="輸入圖片描述..."
                   />
                 </div>
                 <div className="flex gap-2 pt-4">
+                  <Button onClick={handleSave}>
+                    <Save className="h-4 w-4 mr-2" />
+                    更新
+                  </Button>
                   <Button
                     variant="destructive"
                     onClick={() => setDeleteTarget(selectedMedia)}

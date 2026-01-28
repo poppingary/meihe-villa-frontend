@@ -45,6 +45,7 @@ export interface MediaFileUpdate {
   caption?: string | null;
   caption_zh?: string | null;
   folder?: string | null;
+  original_filename?: string | null;
 }
 
 export interface MediaFileListResponse {
