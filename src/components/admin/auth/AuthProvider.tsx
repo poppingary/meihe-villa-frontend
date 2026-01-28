@@ -1,8 +1,8 @@
 'use client';
 
-import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode, useRef } from 'react';
 import { useRouter, usePathname } from 'next/navigation';
-import { User, AuthState } from '@/types/admin/auth';
+import { AuthState } from '@/types/admin/auth';
 import * as authService from '@/services/admin/auth';
 
 interface AuthContextValue extends AuthState {
@@ -60,9 +60,31 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     router.replace('/admin/login');
   }, [router]);
 
+  const hasCheckedAuth = useRef(false);
+
   useEffect(() => {
-    checkAuth();
-  }, [checkAuth]);
+    if (hasCheckedAuth.current) return;
+    hasCheckedAuth.current = true;
+
+    const initAuth = async () => {
+      try {
+        const user = await authService.checkAuth();
+        setState({
+          user,
+          isLoading: false,
+          isAuthenticated: !!user,
+        });
+      } catch {
+        setState({
+          user: null,
+          isLoading: false,
+          isAuthenticated: false,
+        });
+      }
+    };
+
+    initAuth();
+  }, []);
 
   // Redirect unauthenticated users (except on login page)
   useEffect(() => {
