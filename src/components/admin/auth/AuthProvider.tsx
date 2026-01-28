@@ -46,7 +46,8 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       isLoading: false,
       isAuthenticated: true,
     });
-    // Redirect is handled by useEffect when isAuthenticated becomes true
+    // Direct redirect after successful login
+    window.location.href = '/admin';
   }, []);
 
   const logout = useCallback(async () => {
