@@ -136,7 +136,7 @@ describe('fetchApi', () => {
 
       await expect(fetchApi('/api/v1/notfound')).rejects.toThrow(ApiError);
 
-      const error = await fetchApi('/api/v1/notfound').catch((e) => e);
+      const error = await fetchApi('/api/v1/notfound').catch((e) => e) as ApiError;
       expect(error.status).toBe(404);
       expect(error.statusText).toBe('Not Found');
     });
