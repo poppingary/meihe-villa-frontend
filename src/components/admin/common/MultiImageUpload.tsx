@@ -14,6 +14,8 @@ interface MultiImageUploadProps {
   maxImages?: number;
   /** When true, deleting an image also removes it from S3 and database */
   deleteFromStorage?: boolean;
+  /** S3 folder for organizing uploads (e.g. "news", "gallery") */
+  folder?: string;
 }
 
 export function MultiImageUpload({
@@ -22,6 +24,7 @@ export function MultiImageUpload({
   label = '相關圖片',
   maxImages = 10,
   deleteFromStorage = false,
+  folder,
 }: MultiImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -45,7 +48,7 @@ export function MultiImageUpload({
 
       setIsUploading(true);
       try {
-        const uploadPromises = validFiles.map((file) => uploadMedia(file));
+        const uploadPromises = validFiles.map((file) => uploadMedia(file, { folder }));
         const results = await Promise.all(uploadPromises);
         const newUrls = results.map((media) => media.public_url);
         onChange([...value, ...newUrls]);
@@ -57,7 +60,7 @@ export function MultiImageUpload({
         setIsUploading(false);
       }
     },
-    [onChange, value, maxImages]
+    [onChange, value, maxImages, folder]
   );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

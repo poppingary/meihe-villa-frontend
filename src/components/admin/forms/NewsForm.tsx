@@ -228,6 +228,7 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
             value={formData.featured_image || ''}
             onChange={(url) => handleChange('featured_image', url)}
             deleteFromStorage
+            folder="news"
           />
           <div className="border-t pt-6">
             <MultiImageUpload
@@ -236,6 +237,7 @@ export function NewsForm({ news, isNew = false }: NewsFormProps) {
               onChange={handleImagesChange}
               maxImages={10}
               deleteFromStorage
+              folder="news"
             />
           </div>
         </CardContent>

@@ -14,6 +14,8 @@ interface ImageUploadProps {
   placeholder?: string;
   /** When true, deleting an image also removes it from S3 and database */
   deleteFromStorage?: boolean;
+  /** S3 folder for organizing uploads (e.g. "news", "gallery") */
+  folder?: string;
 }
 
 export function ImageUpload({
@@ -22,6 +24,7 @@ export function ImageUpload({
   label = '封面圖片',
   placeholder = '選擇或拖放圖片上傳...',
   deleteFromStorage = false,
+  folder,
 }: ImageUploadProps) {
   const [isUploading, setIsUploading] = useState(false);
   const [isDragOver, setIsDragOver] = useState(false);
@@ -36,7 +39,7 @@ export function ImageUpload({
 
       setIsUploading(true);
       try {
-        const media = await uploadMedia(file);
+        const media = await uploadMedia(file, { folder });
         onChange(media.public_url);
         toast.success('圖片上傳成功');
       } catch (error) {
@@ -46,7 +49,7 @@ export function ImageUpload({
         setIsUploading(false);
       }
     },
-    [onChange]
+    [onChange, folder]
   );
 
   const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {

@@ -25,6 +25,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { ConfirmDialog } from '@/components/admin/common';
 import {
   listMediaFiles,
+  listFolders,
   deleteMediaFile,
   uploadMedia,
   updateMediaFile,
@@ -44,6 +45,8 @@ export default function MediaLibraryPage() {
   // Filters
   const [page, setPage] = useState(1);
   const [category, setCategory] = useState<string>('');
+  const [folder, setFolder] = useState<string>('');
+  const [folders, setFolders] = useState<string[]>([]);
   const [search, setSearch] = useState('');
   const [searchInput, setSearchInput] = useState('');
 
@@ -54,6 +57,7 @@ export default function MediaLibraryPage() {
         page,
         page_size: 24,
         category: category || undefined,
+        folder: folder || undefined,
         search: search || undefined,
       });
       setMediaData(data);
@@ -63,11 +67,15 @@ export default function MediaLibraryPage() {
     } finally {
       setIsLoading(false);
     }
-  }, [page, category, search]);
+  }, [page, category, folder, search]);
 
   useEffect(() => {
     loadMedia();
   }, [loadMedia]);
+
+  useEffect(() => {
+    listFolders().then(setFolders).catch(console.error);
+  }, []);
 
   const handleSearch = () => {
     setSearch(searchInput);
@@ -217,6 +225,18 @@ export default function MediaLibraryPage() {
             <SelectItem value="all">所有類型</SelectItem>
             <SelectItem value="images">圖片</SelectItem>
             <SelectItem value="videos">影片</SelectItem>
+          </SelectContent>
+        </Select>
+
+        <Select value={folder || 'all'} onValueChange={(v) => { setFolder(v === 'all' ? '' : v); setPage(1); }}>
+          <SelectTrigger className="w-[130px] sm:w-[170px]">
+            <SelectValue placeholder="所有資料夾" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">所有資料夾</SelectItem>
+            {folders.map((f) => (
+              <SelectItem key={f} value={f}>{f}</SelectItem>
+            ))}
           </SelectContent>
         </Select>
 

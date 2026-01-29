@@ -59,6 +59,7 @@ export interface MediaFileListResponse {
 export interface PresignedUrlRequest {
   filename: string;
   content_type: string;
+  folder?: string;
 }
 
 export interface PresignedUrlResponse {

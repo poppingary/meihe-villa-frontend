@@ -111,6 +111,7 @@ export async function uploadMedia(
   const presigned = await getPresignedUrl({
     filename: file.name,
     content_type: file.type,
+    folder: options?.folder,
   });
 
   // 2. Upload to S3
@@ -137,7 +138,7 @@ export async function uploadMedia(
     category: file.type.startsWith('image/') ? 'images' : 'videos',
     width,
     height,
-    folder: options?.folder,
+    folder: options?.folder ? `${file.type.startsWith('image/') ? 'images' : 'videos'}/${options.folder}` : undefined,
     alt_text: options?.alt_text,
     alt_text_zh: options?.alt_text_zh,
   };
